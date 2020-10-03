@@ -28,29 +28,32 @@ const getProjects = async (tags) => {
         const projectTitles = [];
         
         await Promise.all(pages).then(res => {
+            let links = [];
             res.forEach(data => {
                 const c = cheerio.load(data);
-                let links = [];
                 c('div.gallery-item figcaption .software-entry-name > h5').each((_idx, el) => {
                     const projectTitle = c(el).text()
                     projectTitles.push(projectTitle)
-
-                    let link = c('div.gallery-item > a.link-to-software').attr('href');
-                    links.push(link);
                 });
 
-                let projectPromises = links.map(link => {
-                    return axios.get(link).then(res => res.data);   
+                let link = c('div.gallery-item > a.link-to-software').attr('href');
+                links.push(link);
+            })
+
+            let projectPromises = links.map(link => {
+                return axios.get(link).then(res => res.data);   
+            })
+            Promise.all(projectPromises).then(projects => {
+                projects.forEach((data) => {
+                    //NLP stuff here ?
+                    let c2 = cheerio.load(data);
+                    // console.log(data);
+                    let projectDescriptions = c2('#app-details-left > div + div p').text();
+                    console.log(projectDescriptions);
                 })
-
-                // Promise.all(projectPromises).then(projects => {
-                //     projects.forEach((data) => {
-                //         //NLP stuff here ?
-                //         let c2 = cheerio.load(data);
-                //     })
-                // })
-
-                
+            })
+            .catch(err => {
+                console.log(err);
             })
         })
 		return projectTitles;
@@ -61,4 +64,6 @@ const getProjects = async (tags) => {
 
 
 getProjects("hand size")
-.then((projectTitles) => console.log(projectTitles));
+.then((projectTitles) => {
+    // console.log()
+});
