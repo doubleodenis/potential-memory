@@ -16,3 +16,25 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+.detailButton {
+    border-radius: 2px;
+    background-color: white;
+    border-width: 3px;
+    border-color: #00109B;
+    color: #00109B;
+    border-style: solid;
+    font-weight: 400;
+    outline: none;
+    padding: 6px 18px;
+    transition: all .2s;
+}
+
+.detailButton:focus, .detailButton:active {
+    outline: none;
+}
+
+.detailButton:active {
+    background-color: #d8e3f0;
+    border-radius: 14px;
+}
