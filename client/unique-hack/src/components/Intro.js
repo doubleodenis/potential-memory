@@ -1,11 +1,19 @@
 import React, { useState } from 'react'
+import axios from 'axios';
 import styles from './Intro.module.css'
 
-const Intro = ({ selected, setSelected }) => {
-  const [searchResults, setSearchResults] = useState(["Search1", "Search2", "Search3"])
+const Intro = ({ handleSetHack }) => {
+  const [searchResults, setSearchResults] = useState()
+  const [selected, setSelected] = useState(null)
 
   function getSearchResults(query) {
-    // setSearchResults()
+    axios.get(`http://localhost:4000/api/hackathons/?search=${query}`)
+      .then(res => {
+        setSearchResults(res.data)
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
   }
 
   return (
@@ -26,13 +34,22 @@ const Intro = ({ selected, setSelected }) => {
       ):(
         <div/>
       )}
-      {searchResults !== null && selected === null ? (
+      {searchResults !== undefined && selected === null ? (
         <div style={{ marginTop: "18px", marginBottom: "18px" }} className="d-flex flex-column align-items-start w-100">
-          <div style={{ marginBottom: "10px" }}>Select one of the follwing:</div>
+          <div style={{ marginBottom: "10px" }}>Select one of the following:</div>
           {searchResults.map((result, i) => {
             return (
-              <button key={"result" + i} onClick={() => setSelected(result)} className={styles.selectionButton + " w-100"} style={{ marginBottom: "4px" }}>
-                {result}
+              <button 
+              key={"result" + i} 
+              onClick={() => {
+                setSelected({
+                  title: result.title.replace(/(^\s*(?!.+)\n+)|(\n+\s+(?!.+)$)/g, ""),
+                  link: result.url
+                })
+              }} 
+              className={styles.selectionButton + " w-100"} 
+              style={{ marginBottom: "4px" }}>
+                {result.title.replace(/(^\s*(?!.+)\n+)|(\n+\s+(?!.+)$)/g, "")}
               </button>
             )
           })}
@@ -42,13 +59,13 @@ const Intro = ({ selected, setSelected }) => {
       )}
       {selected !== null ? (
         <>
-          <div className="d-flex flex-column align-items-center" style={{ marginBottom: "16px" }}>
-            <div style={{ fontSize: "18px" }}>You selected <span style={{ color: "#000c79", fontWeight: "500" }}>{selected}</span></div>
-            <button onClick={() => setSelected(null)} className={styles.cancelSelection}>
+          <div className="d-flex flex-column align-items-center" style={{ marginBottom: "40px" }}>
+            <div style={{ fontSize: "18px", marginBottom: "6px" }}>You selected <span style={{ color: "#000c79", fontWeight: "500" }}>{selected.title}</span></div>
+            <button onClick={() => {setSelected(null); setSearchResults(undefined)}} className={styles.cancelSelection}>
               Cancel Selection
             </button>
           </div>
-          <button className={styles.generateButton}>
+          <button className={styles.generateButton} onClick={() => {handleSetHack(selected)}}>
             Generate Report
           </button>
         </>

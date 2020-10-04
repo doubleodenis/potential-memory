@@ -98,10 +98,10 @@ async function compareDescriptionSimilarity(d1, d2) {
         let similarity = match ? ((match.confidence1 + match.confidence2) / 2) : 0;
        
         return similarity;
-
     }
     catch(err) {
-        console.log(d2, d2.split(" "));
+        // console.log(d2, d2.split(" "));
+        console.log(err);
         return 0;
     }
    

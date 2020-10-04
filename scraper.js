@@ -127,7 +127,7 @@ const generateHackathonReport = async (hackathonUrl) => {
 
                 let projectTitle = $(elem).find("figcaption .software-entry-name > h5").text();
                 let projectLink = $(elem).find("a.link-to-software").attr("href");
-                let projectThumbnail = $(elem).find("img.software_thumbnail_image").attr("href");
+                let projectThumbnail = $(elem).find("img.software_thumbnail_image").attr("src");
                 
                 //for each gallery item analyze a project
                 // let report = await analyzeProject(projectLink);
@@ -267,7 +267,7 @@ async function analyzeContributorProjects(pages, originalDescription, contributo
 
                   let projectThumbnail = $(elem)
                     .find("img.software_thumbnail_image")
-                    .attr("href");
+                    .attr("src");
                 
                     // console.log(projectLink, originalProjectLink);
                     if(projectLink != originalProjectLink) {   

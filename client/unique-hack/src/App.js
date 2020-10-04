@@ -4,15 +4,14 @@ import List from './components/List'
 import styles from './App.module.css'
 
 function App() {
-  const [ready, setReady] = useState(false)
-  const [selection, setSelection] = useState(null)
+  const [hack, setHack] = useState(null)
 
   return (
-    <div id="mainContainer" className={`w-100 d-flex justify-content-center align-items-center ${styles.bigContainer}`}>
-      {!ready ? (
-        <Intro selected={selection} setSelected={setSelection}/>
+    <div id="mainContainer" className={`w-100 d-flex justify-content-center ${hack === null ? ("align-items-center") : ("")} ${styles.bigContainer}`}>
+      {hack === null || hack === undefined ? (
+        <Intro handleSetHack={setHack} />
       ):(
-        <List/>
+        <List hack={hack}/>
       )}
     </div>
   )
