@@ -136,24 +136,23 @@ const generateHackathonReport = async (hackathonUrl) => {
                     title: projectTitle,
                     link: projectLink,
                     thumbnail: projectThumbnail,
-                    // contributors: report.contributors, //inlcude name and link
-                    // similarProjects: report.similarProjects,
-                    // description: report.description,
                 });
             });
             let promisedReports = await Promise.all(promises);
-            reports = promisedReports.map((r, index) => {
+            let finishedReports = promisedReports.map((r, index) => {
+                // console.log(r);
                 return {
-                    title: info[index].projectTitle,
-                    link: info[index].projectLink,
-                    thumbnail: info[index].projectThumbnail,
+                    title: info[index].title,
+                    link: info[index].link,
+                    thumbnail: info[index].thumbnail,
                     contributors: r.contributors, //inlcude name and link
                     similarProjects: r.similarProjects,
                     description: r.description,
                 }
             })
+            reports = [...reports, ...finishedReports];
         }
-        console.log('all reports', reports);
+        // console.log('all reports', reports.length );
         return reports;
       })
       .catch((err) => {
@@ -185,13 +184,15 @@ async function analyzeProject(url) {
         
         let similarProjects = await Promise.all(contributorPages).then(async contributor => {
             let similarProjects = [];
-            contributor.forEach(async (data, dataIndex) => {
+            // contributor.forEach(async (data, dataIndex) => {
+            for(let k = 0; k < contributor.length; k++) {
+                let data = contributor[k];
                 const $ = cheerio.load(data);
 
                 let pagination = $("ul.pagination");
                 
                 let pages = [];
-                let pageUrl = contributorLinks[dataIndex];
+                let pageUrl = contributorLinks[k];
                 //if there is pagination on the page, promise All
                 if (pagination.length > 0) {
                     const lastPage = pagination.find("li").last().prev().text();
@@ -206,10 +207,12 @@ async function analyzeProject(url) {
                 }
 
                 let similarContributorProjects = await analyzeContributorProjects(pages, originalDescription, pageUrl, url);
-               
+                // Promise.all(analyzeContributorProjects(pages, originalDescription, pageUrl, url))
+                // console.log(similarContributorProjects.length > 0 ? similarContributorProjects : null)
                 similarProjects = [...similarProjects, ...similarContributorProjects];
                 
-            })
+            }
+            // console.log('sim', similarProjects);
             return similarProjects;
 
         })
@@ -223,11 +226,14 @@ async function analyzeProject(url) {
             return contributorName;
         })
 
-        return {
+
+        let report = {
             similarProjects: similarProjects,
-            contributors: contributors,
+            contributors: contributors ? contributors : [],
             description: originalDescription
         };
+
+        return report;
     }
     catch (err) {
         console.log(err);
@@ -237,7 +243,6 @@ async function analyzeProject(url) {
 
 async function analyzeContributorProjects(pages, originalDescription, contributorLink, originalProjectLink) {
     try {
-        console.log('...analyzing contributors');
         const paths = contributorLink.split("/");
         let contributorName = paths[paths.length - 1];
 
@@ -285,29 +290,31 @@ async function analyzeContributorProjects(pages, originalDescription, contributo
                   
                 });
                 
-                let similarities = await Promise.all(nestedPromises).then(async page => {
-                    let $ = cheerio.load(page);
+                let similarities = await Promise.all(nestedPromises).then(async pages => {
+                    let similarities = [];
+                    for(let k = 0; k < pages.length; k++) {
+                        let page = pages[k];
+                        let $ = cheerio.load(page);
 
-                    let pastProjectDescription = $("#app-details-left > div p").text();
-                    
-                    let similarity = await nlp.compareDescriptionSimilarity(originalDescription, pastProjectDescription);
-                    
-                    return similarity;
+                        let pastProjectDescription = $("#app-details-left > div p").text();
+                        
+                        let similarity = await nlp.compareDescriptionSimilarity(originalDescription, pastProjectDescription);
+                        similarities.push(similarity);
+                    }
+                    return similarities;
                 })
-                if(similarity > 0.5) {
-                    console.log('similar', similarity)
-                    analyzedProjects.push({
-                        title: projectTitle,
-                        contributor: {
-                            name: contributorName,
-                            link: contributorLink
-                        },
-                        thumbnail: projectThumbnail,
-                        projectLink: projectLink,
-                        similarity: similarity
-                    });
-                }
+
+                similarities.forEach((similarity, idx) => {
+                    if(similarity > 0.5) {
+                        analyzedProjects.push({
+                            ...info[idx],
+                            similarity: similarity
+                        });
+                    }
+                })
+                
             }
+            
             return analyzedProjects;
         })
 
