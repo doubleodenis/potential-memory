@@ -50,6 +50,38 @@
     border-radius: 14px;
 }
 
+.selectionButton {
+    border-radius: 2px;
+    border: none;
+    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.15);
+    width: 60%;
+    background: white;
+    padding: 8px 16px;
+}
+
+.selectionButton:focus, .selectionButton:active {
+    outline: none;
+}
+
+.selectionButton:active {
+    background: #e7e7e7;
+}
+
+.cancelSelection {
+    background: none;
+    border: none;
+    color: red;
+}
+
+.cancelSelection:focus, .cancelSelection:active {
+    outline: none;
+    border: none;
+}
+
+.cancelSelection:active {
+    font-size: 17px;
+}
+
 .generateButton {
     border-radius: 30px;
     background-color: white;

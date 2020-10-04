@@ -23,7 +23,7 @@ const List = () => {
     <div className="d-flex flex-column w-100">
         {testData.map((data, i) => {
             return (
-                <div style={{ marginBottom: "20px" }}>
+                <div key={"data" + i} style={{ marginBottom: "20px" }}>
                     <ProjectCard projectName={data.name} team={data.team}/>
                 </div>
             )

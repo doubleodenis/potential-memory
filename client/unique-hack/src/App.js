@@ -5,12 +5,12 @@ import styles from './App.module.css'
 
 function App() {
   const [ready, setReady] = useState(false)
-  const [inputSelected, setInputSelected] = useState(false)
+  const [selection, setSelection] = useState(null)
 
   return (
     <div id="mainContainer" className={`w-100 d-flex justify-content-center align-items-center ${styles.bigContainer}`}>
       {!ready ? (
-        <Intro selected={inputSelected} setSelected={setInputSelected}/>
+        <Intro selected={selection} setSelected={setSelection}/>
       ):(
         <List/>
       )}
