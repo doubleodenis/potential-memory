@@ -63,7 +63,7 @@ const getProjects = async (tags) => {
 };
 
 
-getProjects("hand size")
-.then((projectTitles) => {
-    // console.log()
-});
+// getProjects("hand size")
+// .then((projectTitles) => {
+//     // console.log()
+// });
