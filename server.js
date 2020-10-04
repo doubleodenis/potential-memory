@@ -1,27 +1,41 @@
 #!/usr/bin/env node
 
+require('dotenv').config();
 /**
  * Module dependencies.
  */
 var http = require('http');
+const express = require("express");
+const path = require("path");
+const bodyParser = require("body-parser");
+var cors = require("cors");
+const nlp = require('./nlp');
 
+var app = express();
+
+
+var apiRoutes = require('./api');
 /**
  * Get port from environment and store in Express.
  */
 
 var port = process.env.PORT || '3000';
-// app.set('port', port);
+app.set('port', port);
 
+//To allow cross-origin requests
+app.use(cors());
+
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+app.use(bodyParser.json());
+
+app.use("/api", apiRoutes);
 /**
  * Create HTTP server.
  */
 
 // var server = http.createServer(app);
-const server = http.createServer((req, res) => {
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/plain');
-    res.end('Hello World');
-  });
+const server = http.createServer(app);
 /**
  * Listen on provided port, on all network interfaces.
  */
@@ -72,3 +86,5 @@ function onListening() {
 }
 
 require('./scraper');
+
+// nlp.quickstart();
